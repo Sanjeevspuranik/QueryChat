@@ -8,13 +8,18 @@ Connect SQLite, PostgreSQL, MySQL, SQL Server, MongoDB and other non-vector data
 
 ## 🎥 Watch the Demo
 
+**[▶ Watch the demo of the current FastAPI + Next.js app](demo/QueryChat_demo.mp4)** (2:14). GitHub plays the file in the browser once you open it.
+
+<details>
+<summary>Original Streamlit demo</summary>
+
 <video src="https://github.com/user-attachments/assets/47841152-1b70-4bbe-98fc-d0ea1c0f8023" controls="controls" style="max-width: 100%;">
   Your browser does not support the video tag.
 </video>
 
 _If the video does not load, [view it directly here](https://github.com/user-attachments/assets/47841152-1b70-4bbe-98fc-d0ea1c0f8023)._
 
-> The demo shows the original Streamlit version. The FastAPI + Next.js app described below is the current one.
+</details>
 
 ---
 

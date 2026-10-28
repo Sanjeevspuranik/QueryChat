@@ -40,6 +40,28 @@ QueryChat utilizes a directed acyclic graph (DAG) to manage the reasoning proces
 
 ---
 
+## 🆕 Production app (FastAPI + Next.js)
+
+The `backend/` and `frontend/` folders are the production rewrite: multi-database support (SQLite, PostgreSQL, MySQL, SQL Server, MongoDB and more via one URL field), auth, saved chat sessions and a self-correcting agent (up to 3 retries). The Streamlit files above remain until you no longer need them. Design docs live in [architecture/](architecture/architecture.md).
+
+```bash
+# Backend (http://localhost:8000)
+cd backend
+python -m venv .venv && .venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env          # then fill keys: python scripts/gen_keys.py, and OPENAI_API_KEY
+uvicorn app.main:get_app --factory --reload
+
+# Frontend (http://localhost:3000)
+cd frontend
+npm install
+npm run dev
+```
+
+Tests: `cd backend && python -m pytest`. For SQLite URLs, paths are relative to where the backend runs, e.g. `sqlite:///../chinook.db`.
+
+---
+
 ## 📂 Project Structure
 
 ```text

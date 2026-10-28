@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" font-family="system-ui, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#4b5068"/>
+    </marker>
+    <style>
+      .box { fill:#fff; stroke:#4b5068; stroke-width:1.5; rx:10; }
+      .web { fill:#eef0ff; stroke:#4f46e5; }
+      .api { fill:#e9f7ef; stroke:#1a7f4b; }
+      .agent { fill:#fff4e5; stroke:#d97706; }
+      .data { fill:#f3f4f6; stroke:#6b7088; }
+      .ext { fill:#fdecec; stroke:#c0262d; }
+      .t { font-weight:700; font-size:14px; fill:#1c1e2b; }
+      .s { fill:#4b5068; }
+      .l { stroke:#4b5068; stroke-width:1.5; fill:none; marker-end:url(#arrow); }
+      .lbl { fill:#6b7088; font-size:11px; }
+    </style>
+  </defs>
+
+  <text x="500" y="28" text-anchor="middle" class="t" font-size="18">QueryChat — System Architecture</text>
+
+  <!-- Browser -->
+  <rect class="box web" x="30" y="60" width="250" height="190"/>
+  <text x="155" y="84" text-anchor="middle" class="t">Next.js frontend</text>
+  <text x="48" y="110" class="s">• /login /register (AuthForm)</text>
+  <text x="48" y="130" class="s">• /chat (ChatWindow, Sidebar)</text>
+  <text x="48" y="150" class="s">• ConnectionForm: one URL field</text>
+  <text x="48" y="170" class="s">• ResultView: table + chart</text>
+  <text x="48" y="190" class="s">• Attempts trace (self-correction)</text>
+  <text x="48" y="210" class="s">• SSE stream reader, Stop button</text>
+  <text x="48" y="230" class="s">• localStorage: active session</text>
+
+  <!-- API -->
+  <rect class="box api" x="360" y="60" width="290" height="190"/>
+  <text x="505" y="84" text-anchor="middle" class="t">FastAPI (routers + services)</text>
+  <text x="378" y="110" class="s">routers: auth · connections · sessions/chat</text>
+  <text x="378" y="132" class="s">AuthService (argon2, JWT cookie)</text>
+  <text x="378" y="152" class="s">ConnectionService (Fernet, UrlPolicy)</text>
+  <text x="378" y="172" class="s">SessionService (seq-ordered messages)</text>
+  <text x="378" y="192" class="s">ChatService (stream + persist)</text>
+  <text x="378" y="212" class="s">RunGuard (409 / 429 backpressure)</text>
+  <text x="378" y="232" class="s">Container (composition root, DI)</text>
+
+  <!-- App DB -->
+  <rect class="box data" x="730" y="60" width="240" height="100"/>
+  <text x="850" y="84" text-anchor="middle" class="t">App database</text>
+  <text x="748" y="110" class="s">users · connections (encrypted URL)</text>
+  <text x="748" y="130" class="s">chat_sessions · messages</text>
+  <text x="748" y="148" class="s">SQLite (dev) / PostgreSQL (prod)</text>
+
+  <!-- LLM -->
+  <rect class="box ext" x="730" y="190" width="240" height="60"/>
+  <text x="850" y="214" text-anchor="middle" class="t">LLM provider (OpenAI)</text>
+  <text x="850" y="234" text-anchor="middle" class="s">QueryLLM protocol</text>
+
+  <!-- Agent -->
+  <rect class="box agent" x="30" y="300" width="620" height="170"/>
+  <text x="340" y="324" text-anchor="middle" class="t">LangGraph agent (bounded self-correction loop, max_retries = 3)</text>
+  <g class="s">
+    <rect class="box" x="48" y="345" width="95" height="40"/><text x="95" y="370" text-anchor="middle">load_schema</text>
+    <rect class="box" x="168" y="345" width="95" height="40"/><text x="215" y="370" text-anchor="middle">generate</text>
+    <rect class="box" x="288" y="345" width="95" height="40"/><text x="335" y="370" text-anchor="middle">validate</text>
+    <rect class="box" x="408" y="345" width="95" height="40"/><text x="455" y="370" text-anchor="middle">execute</text>
+    <rect class="box" x="528" y="345" width="105" height="40"/><text x="580" y="370" text-anchor="middle">summarize</text>
+    <rect class="box" x="288" y="415" width="95" height="40"/><text x="335" y="440" text-anchor="middle">retry_gate</text>
+    <rect class="box" x="528" y="415" width="105" height="40"/><text x="580" y="440" text-anchor="middle">fail (graceful)</text>
+  </g>
+  <path class="l" d="M143 365H168"/>
+  <path class="l" d="M263 365H288"/>
+  <path class="l" d="M383 365H408"/>
+  <path class="l" d="M503 365H528"/>
+  <path class="l" d="M335 385V415"/>
+  <path class="l" d="M455 385V400H383"/>
+  <path class="l" d="M288 435H215V385"/>
+  <path class="l" d="M383 435H528"/>
+  <text x="225" y="412" class="lbl">retry &lt; 3</text>
+  <text x="440" y="428" class="lbl">exhausted / non-retryable</text>
+
+  <!-- Adapters -->
+  <rect class="box api" x="30" y="510" width="620" height="110"/>
+  <text x="340" y="534" text-anchor="middle" class="t">Adapter layer (DatabaseAdapter interface) + AdapterPool (LRU, per-key lock)</text>
+  <rect class="box" x="60" y="552" width="170" height="52"/>
+  <text x="145" y="574" text-anchor="middle" class="s">SqlAdapter</text>
+  <text x="145" y="592" text-anchor="middle" class="lbl">SQLAlchemy + sqlglot, read-only</text>
+  <rect class="box" x="255" y="552" width="170" height="52"/>
+  <text x="340" y="574" text-anchor="middle" class="s">MongoAdapter</text>
+  <text x="340" y="592" text-anchor="middle" class="lbl">aggregation allowlist</text>
+  <rect class="box" x="450" y="552" width="170" height="52" stroke-dasharray="5 4"/>
+  <text x="535" y="574" text-anchor="middle" class="s">Future adapters</text>
+  <text x="535" y="592" text-anchor="middle" class="lbl">register by URL scheme</text>
+
+  <!-- User DBs -->
+  <rect class="box data" x="730" y="400" width="240" height="220"/>
+  <text x="850" y="424" text-anchor="middle" class="t">User databases</text>
+  <text x="850" y="460" text-anchor="middle" class="s">SQLite · PostgreSQL · MySQL</text>
+  <text x="850" y="484" text-anchor="middle" class="s">SQL Server · Oracle · …</text>
+  <text x="850" y="508" text-anchor="middle" class="s">MongoDB</text>
+  <text x="850" y="560" text-anchor="middle" class="lbl">Vector stores rejected by UrlPolicy</text>
+  <text x="850" y="580" text-anchor="middle" class="lbl">Read-only session + timeout + row cap</text>
+
+  <!-- Flows -->
+  <path class="l" d="M280 130H360"/>
+  <text x="285" y="122" class="lbl">REST + SSE</text>
+  <path class="l" d="M650 110H730"/>
+  <path class="l" d="M505 250V300"/>
+  <path class="l" d="M650 340Q690 340 690 225Q690 220 730 220"/>
+  <text x="655" y="330" class="lbl">prompts</text>
+  <path class="l" d="M340 470V510"/>
+  <path class="l" d="M650 565H730"/>
+</svg>

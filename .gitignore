@@ -211,3 +211,4 @@ backend/*.db
 backend/.pytest_cache/
 
 backend/evals/results/
+backend/logs/

@@ -58,7 +58,17 @@ npm install
 npm run dev
 ```
 
-Tests: `cd backend && python -m pytest`. For SQLite URLs, paths are relative to where the backend runs, e.g. `sqlite:///../chinook.db`.
+Tests: `cd backend && python -m pytest`.
+
+**SQLite URLs:** use an absolute path, e.g. `sqlite:///C:/data/chinook.db` (backslashes and quotes are tolerated). Relative paths resolve against the backend's working directory. Files are opened read-only, and a missing file gives a clear error instead of creating an empty database.
+
+**Logs:** `backend/logs/server.log` (rotating, see `LOG_*` in `.env.example`). Each line carries a request id, also returned as the `X-Request-ID` header, so a failing request can be found by id. URLs, passwords and question text are never logged.
+
+**Spider eval:** pass `--data <path to spider_data>` if it is not at the repo root.
+
+**Database migrations.** The app's own database (users, chats) is managed by Alembic and upgraded automatically on startup (`DB_BOOTSTRAP=migrate`, the default). Existing databases created before Alembic are adopted without data loss. After changing `app/db/models.py`, create a migration with `alembic revision --autogenerate -m "message"` and apply it with `alembic upgrade head` (run from `backend/`). `DB_BOOTSTRAP=create_all` skips migrations and is meant for throwaway or in-memory databases only.
+
+**Spider eval.** `python -m evals.run_spider --help` (from `backend/`) scores the agent on the Spider dataset by execution accuracy; `--gold-check` validates the gold SQL without any LLM calls.
 
 ---
 

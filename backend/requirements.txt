@@ -1,0 +1,22 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic[email]>=2.7
+pydantic-settings>=2.3
+sqlalchemy[asyncio]>=2.0
+aiosqlite>=0.20
+argon2-cffi>=23.1
+pyjwt>=2.8
+cryptography>=42
+sqlglot>=25
+pymongo>=4.8
+langgraph>=0.2
+langchain-openai>=0.2
+# Optional drivers for user databases (install what you need):
+# psycopg[binary]   -> PostgreSQL
+# pymysql           -> MySQL / MariaDB
+# pyodbc            -> SQL Server
+# oracledb          -> Oracle
+pytest>=8
+pytest-asyncio>=0.23
+httpx>=0.27
+alembic>=1.13

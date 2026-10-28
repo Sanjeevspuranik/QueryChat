@@ -135,7 +135,7 @@ QueryChat/
 ├── frontend/                # Next.js (App Router, TypeScript, Recharts)
 │   └── src/{app,components,hooks,lib}
 ├── architecture/            # Design docs, API reference, security, suggestions
-├── demo/QueryChat_demo.mp4  # Short demo clip (the full video is linked above)
+├── demo/QueryChat_demo.mp4  # Demo video (compressed, 2:14)
 ├── app.py, graph.py         # Original Streamlit version (legacy)
 └── README.md
 ```

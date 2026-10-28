@@ -11,22 +11,28 @@ QueryChat lets a signed-in user connect any non-vector database through **one UR
 | [api.md](./api.md) | REST + SSE contract and data model |
 | [security.md](./security.md) | Threat model and controls |
 | [concurrency.md](./concurrency.md) | Concurrency and backpressure design |
-| [suggestions.md](./suggestions.md) | Feature and optimization backlog |
+| [suggestions.md](./suggestions.md) | Feature and optimization backlog, with what is already done |
+
+## Logging
+`backend/logs/server.log` is a rotating file (`LOG_MAX_MB`, `LOG_BACKUPS`) that mirrors the console. `RequestLogMiddleware` assigns each request an id, logs `METHOD path -> status (ms)`, returns it as `X-Request-ID`, and answers unhandled errors with a JSON 500 that quotes the id. Chat runs log start, end, failed attempts, timeouts and cancels. URLs, passwords and question text are never logged.
 
 ## Repository layout
 ```
 backend/app
-  core/        config, errors, security primitives (hash, JWT, Fernet)
-  db/          app-database ORM models
-  adapters/    DatabaseAdapter ABC, SqlAdapter, MongoAdapter, registry, pool, UrlPolicy
+  core/        config, errors, security primitives (hash, JWT, Fernet), logging_setup
+  db/          app-database ORM models, Alembic bootstrap (migrate.py)
+  adapters/    DatabaseAdapter ABC, SqlAdapter, MongoAdapter, registry, pool, UrlPolicy, sqlite_path
   agent/       state, nodes, graph, events, LLM
-  services/    auth, connection, session, chat, run_guard
+  services/    auth, connection, session, chat, query_runner, export, run_guard
   routers/     thin HTTP layer
   container.py composition root
+backend/alembic    migrations (0001_initial)
+backend/evals      Spider benchmark runner and scoring
 frontend/src
-  app/         login, register, chat pages
-  components/  AuthForm, Sidebar, ConnectionForm, ChatWindow, MessageView, ResultView
-  lib/         api client (+ SSE reader), types
+  app/         login, register, chat pages, globals.css (light and dark theme variables)
+  components/  AuthForm, Sidebar, ConnectionForm, ChatWindow, MessageView, ResultView, Markdown, ThemeToggle
+  hooks/       useWorkspace (chat, session and connection state)
+  lib/         api client (+ SSE reader), types, chartModel
 ```
 
 ## Layering
@@ -77,6 +83,6 @@ Details, retry rules and state: [agent-flow.md](agent-flow.md).
 
 ## Known limits (v1)
 - `RunGuard` and login throttling are in-process; use Redis for multi-worker deployments.
-- Tables are created with `create_all`; adopt Alembic migrations before the first schema change in production.
+- Tables are managed by Alembic (`DB_BOOTSTRAP=migrate`). `create_all` is for throwaway or in-memory databases only.
 - Access token only (12 h); no refresh-token rotation yet.
 - Timed-out queries stop waiting but the driver thread may finish in the background; server-side cancel is a listed improvement.

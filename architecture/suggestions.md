@@ -1,8 +1,12 @@
 # Suggestions: Features and Optimizations
 
+## Done
+- **Export** results to CSV and JSON.
+- **Chart picker** (bar, line, pie) with an automatic default.
+- **Alembic migrations**, rotating `server.log` with request ids, dark mode, and a Spider eval runner (`backend/evals`).
+
 ## Features
-- **Export** results to CSV / Excel.
-- **Chart picker** (bar, line, pie, scatter) with automatic suggestion; pin charts to dashboards.
+- **Excel (.xlsx) export** and a scatter chart; pin charts to dashboards that refresh on a schedule.
 - **Editable query**: tweak the generated SQL and re-run it (through the same validator).
 - **Schema explorer** sidebar with user-written table/column descriptions that improve accuracy.
 - **Follow-up suggestions** after each answer; query history search; saved/pinned questions.
@@ -16,11 +20,11 @@
 - Large schemas: pick relevant tables first, then send only their DDL (retrieval over schema, not a vector DB of user data).
 - Server-side query cancellation; background worker (ARQ/Celery) for very long queries.
 - Redis for rate limits, run locks and schema cache across workers.
-- Refresh-token rotation; Alembic migrations; per-user quotas and token-usage metering.
+- Refresh-token rotation; per-user quotas and token-usage metering.
 
 ## Quality and operations
-- Text-to-query **eval set** in CI measuring accuracy and average retries.
-- Observability: structured logs, OpenTelemetry, LangSmith traces of the attempt history.
+- Run the Spider eval in CI (a small `--sample` with a cost cap) and track accuracy and average retries over time. The measured retry benefit is small, so repeat each setting a few times before drawing conclusions.
+- Observability beyond logs: OpenTelemetry and LangSmith traces of the attempt history.
 - Docker Compose (api, web, postgres, redis) and CI for lint, tests and `next build`.
 - Generate frontend types from the FastAPI OpenAPI schema to prevent contract drift.
 - Playwright end-to-end tests for login, connect, chat, retry display.

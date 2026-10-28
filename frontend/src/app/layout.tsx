@@ -6,9 +6,15 @@ export const metadata: Metadata = {
   description: "Chat with any database",
 };
 
+// Runs before paint so a saved or system dark preference never flashes light.
+const THEME_SCRIPT = `try{var t=localStorage.getItem("querychat-theme");if(!t){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

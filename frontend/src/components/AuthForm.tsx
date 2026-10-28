@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { api } from "@/lib/api";
+import ThemeToggle from "./ThemeToggle";
 
 export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   return (
     <main className="auth">
+      <div className="theme-corner"><ThemeToggle /></div>
       <form onSubmit={submit} className="card">
         <h1>📊 QueryChat</h1>
         <p className="muted">{isLogin ? "Sign in to continue" : "Create your account"}</p>

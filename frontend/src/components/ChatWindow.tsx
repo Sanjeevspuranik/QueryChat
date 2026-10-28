@@ -33,32 +33,36 @@ export default function ChatWindow({ messages, progress, busy, disabled, error, 
   return (
     <section className="chat">
       <div className="messages">
-        {messages.length === 0 && !disabled && <p className="muted center">Ask anything about your data.</p>}
-        {disabled && <p className="muted center">Add a database in the sidebar to start chatting.</p>}
-        {messages.map((m) => <MessageView key={m.id} message={m} />)}
-        {busy && (
-          <div className="msg assistant">
-            <div className="bubble skeleton">
-              <span className="spinner" /> {progress ?? "Thinking…"}
+        <div className="messages-inner">
+          {messages.length === 0 && !disabled && <p className="muted center">Ask anything about your data.</p>}
+          {disabled && <p className="muted center">Add a database in the sidebar to start chatting.</p>}
+          {messages.map((m) => <MessageView key={m.id} message={m} />)}
+          {busy && (
+            <div className="msg assistant">
+              <div className="bubble skeleton">
+                <span className="spinner" /> {progress ?? "Thinking…"}
+              </div>
             </div>
-          </div>
-        )}
-        {error && <p className="error center" role="alert">{error}</p>}
-        <div ref={bottom} />
+          )}
+          {error && <p className="error center" role="alert">{error}</p>}
+          <div ref={bottom} />
+        </div>
       </div>
       <form onSubmit={submit} className="composer">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about your database…"
-          maxLength={2000}
-          disabled={disabled || busy}
-        />
-        {busy ? (
-          <button type="button" className="secondary" onClick={onStop}>Stop</button>
-        ) : (
-          <button disabled={disabled || !input.trim()}>Send</button>
-        )}
+        <div className="composer-inner">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about your database…"
+            maxLength={2000}
+            disabled={disabled || busy}
+          />
+          {busy ? (
+            <button type="button" className="secondary" onClick={onStop}>Stop</button>
+          ) : (
+            <button disabled={disabled || !input.trim()}>Send</button>
+          )}
+        </div>
       </form>
     </section>
   );

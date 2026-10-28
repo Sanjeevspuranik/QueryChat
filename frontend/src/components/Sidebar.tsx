@@ -1,6 +1,7 @@
 "use client";
 
 import ConnectionForm from "./ConnectionForm";
+import ThemeToggle from "./ThemeToggle";
 import type { ChatSession, Connection } from "@/lib/types";
 
 interface Props {
@@ -60,6 +61,7 @@ export default function Sidebar(p: Props) {
 
       <footer>
         <span className="muted">{p.email}</span>
+        <ThemeToggle />
         <button className="secondary" onClick={p.onLogout}>
           Sign out
         </button>

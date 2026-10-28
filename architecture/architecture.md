@@ -46,6 +46,28 @@ frontend/src
 - `AdapterRegistry` is a **factory/registry**; `Container` is the **composition root**.
 - Domain errors (`core/errors.py`) carry meaning; the agent reads them to decide retry vs stop, and `main.py` maps them to HTTP codes.
 
+## Agentic graph
+
+The chat agent is a LangGraph state machine with a bounded self-correction loop. Any retryable failure at validate or execute passes through `retry_gate` back to `generate`, with the error and earlier failed queries in the prompt. Security violations and connection failures go straight to `fail`.
+
+```mermaid
+flowchart TD
+    S([Start]) --> LS[load_schema]
+    LS -->|schema ok| G[generate]
+    LS -->|schema failed| F[fail]
+    G --> V[validate]
+    V -->|valid| E[execute]
+    V -->|invalid or unsafe| RG{retry_gate}
+    E -->|rows returned| SUM[summarize]
+    E -->|error, duplicate, empty once| RG
+    RG -->|retry_count < max_retries| G
+    RG -->|exhausted or non-retryable| F
+    SUM --> X([END])
+    F --> X
+```
+
+Details, retry rules and state: [agent-flow.md](agent-flow.md).
+
 ## Request lifecycle (one chat turn)
 1. Browser `POST /api/sessions/{id}/chat` (cookie auth, same-origin through the Next.js proxy).
 2. `ChatService.prepare`: verify ownership, reserve a run slot (`RunGuard`), store the user message.

@@ -1,5 +1,34 @@
 # Agent Flow
 
+## Agentic graph
+
+```mermaid
+flowchart TD
+    S([Start]) --> LS[load_schema]
+    LS -->|schema ok| G[generate<br/>LLM writes the query]
+    LS -->|schema failed| F[fail<br/>explain the last problem]
+    G --> V[validate<br/>sqlglot AST / Mongo allowlist]
+    V -->|valid| E[execute<br/>read-only, timeout, row cap]
+    V -->|invalid or unsafe| RG{retry_gate}
+    E -->|rows returned| SUM[summarize<br/>short answer]
+    E -->|error, duplicate, empty once| RG
+    RG -->|retryable and retry_count < max_retries| G
+    RG -->|exhausted or non-retryable| F
+    SUM --> X([END])
+    F --> X
+
+    classDef llm fill:#e0e7ff,stroke:#4f46e5,color:#1c1e2b;
+    classDef guard fill:#fef3c7,stroke:#d97706,color:#1c1e2b;
+    classDef bad fill:#fee2e2,stroke:#c0262d,color:#1c1e2b;
+    class G,SUM llm;
+    class V,RG guard;
+    class F bad;
+```
+
+Blue nodes call the LLM, amber nodes are deterministic guards, red is the failure exit. `retry_gate` is the only place `retry_count` changes, so the loop is bounded by `AGENT_MAX_RETRIES` (default 3).
+
+## Text view
+
 ```
 load_schema → generate → validate → execute → summarize → END
                  ▲           │          │
